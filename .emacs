@@ -22,6 +22,7 @@
 (use-package airline-themes :ensure airline-themes)
 (use-package iedit :ensure iedit)
 (use-package yasnippet :ensure yasnippet)
+(use-package yasnippet-snippets :ensure yasnippet-snippets)
 (use-package auto-complete-clang :ensure auto-complete-clang)
 (use-package flycheck :ensure flycheck)
 (use-package company-irony :ensure company-irony)
@@ -39,6 +40,7 @@
 (require 'airline-themes)
 (require 'iedit)
 (require 'yasnippet)
+(require 'yasnippet-snippets)
 (require 'auto-complete)
 (require 'auto-complete-config)
 (require 'auto-complete-clang)
@@ -70,17 +72,15 @@
 
 (load-theme 'tango-dark)
 
-(add-hook 'c-mode-common-hook #'smartparens-mode)
-
 (show-paren-mode 1)
 
 (powerline-default-theme)
 
-					;(load-theme 'airline-powerlineish t)
-
 (yas-global-mode 1)
+
 (semantic-mode 1)
 
+;;; Nyancat
 (setq-default nyan-animate-nyancat t)
 (setq-default nyan-wavy-trail t)
 (setq-default nyan-minimum-window-width 100)
@@ -162,15 +162,9 @@
 
 (setq transient-mark-mode t)
 
-(setq kill-buffer-query-functions
-      (remq 'process-kill-buffer-query-function
-	    kill-buffer-query-functions))
+(setq kill-buffer-query-functions (remq 'process-kill-buffer-query-function kill-buffer-query-functions)) (setq backup-directory-alist `((".*" . ,temporary-file-directory)))
 
-(setq backup-directory-alist
-      `((".*" . ,temporary-file-directory)))
-
-(setq auto-save-file-name-transforms
-      `((".*" ,temporary-file-directory t)))
+(setq auto-save-file-name-transforms `((".*" ,temporary-file-directory t)))
 
 (ido-mode 1)
 
@@ -186,22 +180,17 @@
 (add-hook 'c-mode-common-hook (lambda() (local-set-key (kbd "<f5>") 'cppcm-compile-in-root-build-dir)))
 (add-hook 'c-mode-common-hook (lambda() (local-set-key (kbd "<f6>") 'cppcm-recompile)))
 (add-hook 'c-mode-common-hook (lambda() (local-set-key (kbd "<C-insert>") 'ff-find-other-file)))
-
-(setq flycheck-clang-include-path
-      '("/home/dholovati/bjvm/include")
-      )
-
-(add-hook 'c++-mode-hook
-          (lambda () (setq flycheck-clang-language-standard "c++11")))
-
-;; (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
-
+(add-hook 'c-mode-common-hook (lambda() (linum-mode 1)))
 (add-hook 'c-mode-common-hook 'google-set-c-style)
-
 (add-hook 'c-mode-common-hook 'google-make-newline-indent)
+(add-hook 'c-mode-common-hook #'smartparens-mode)
+
+
+(add-hook 'c++-mode-hook (lambda () (setq flycheck-clang-language-standard "c++11")))
 
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
