@@ -139,6 +139,17 @@
         ((looking-at "\\s)") (forward-char 1) (backward-list 1))
         (t (self-insert-command (or arg 1)))))
 
+(defun jrh-isearch-with-region ()
+  "Use region as the isearch text."
+  (when mark-active
+    (let ((region (funcall region-extract-function nil)))
+      (deactivate-mark)
+      (isearch-push-state)
+      (isearch-yank-string region))))
+
+(add-hook 'isearch-mode-hook #'jrh-isearch-with-region)
+
+
 ;;(add-hook 'c-mode-common-hook (lambda () (interactive) (column-marker-3 80)))
 
 ;;-------------------------------------- MISC
