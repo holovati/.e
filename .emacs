@@ -33,6 +33,8 @@
 (use-package nyan-mode :ensure nyan-mode)
 (use-package helm :ensure helm)
 (use-package helm-git-grep :ensure helm-git-grep)
+(use-package helm-gtags :ensure helm-gtags)
+(use-package clang-format :ensure clang-format)
 
 (require 'tango-2-theme)
 (require 'smartparens-config)
@@ -55,10 +57,27 @@
 (require 'nyan-mode)
 (require 'helm)
 (require 'helm-git-grep) ;; Not necessary if installed by package.el
+(require 'helm-gtags)
+(require 'clang-format)
+
+;;-------------------------------------- gtags
+;; Enable helm-gtags-mode
+(add-hook 'c-mode-hook 'helm-gtags-mode)
+(add-hook 'c++-mode-hook 'helm-gtags-mode)
+(add-hook 'asm-mode-hook 'helm-gtags-mode)
+
+
+(define-key helm-gtags-mode-map (kbd "C-c g a") 'helm-gtags-tags-in-this-function)
+(define-key helm-gtags-mode-map (kbd "C-j") 'helm-gtags-select)
+(define-key helm-gtags-mode-map (kbd "M-.") 'helm-gtags-dwim)
+(define-key helm-gtags-mode-map (kbd "M-,") 'helm-gtags-pop-stack)
+(define-key helm-gtags-mode-map (kbd "C-c <") 'helm-gtags-previous-history)
+(define-key helm-gtags-mode-map (kbd "C-c >") 'helm-gtags-next-history)
 
 ;;-------------------------------------- CONFIG
 
 (global-set-key (kbd "C-c g") 'helm-git-grep)
+
 ;; Invoke `helm-git-grep' from isearch.
 (define-key isearch-mode-map (kbd "C-c g") 'helm-git-grep-from-isearch)
 ;; Invoke `helm-git-grep' from other helm.
@@ -115,11 +134,14 @@
             (if (derived-mode-p 'c-mode 'c++-mode)
                 (cppcm-reload-all)
               )))
+
+(add-hook 'c-mode-common-hook
+          (function (lambda ()
+                    (add-hook 'before-save-hook
+                              'clang-format-buffer))))
+
 ;; OPTIONAL, somebody reported that they can use this package with Fortran
 (add-hook 'c90-mode-hook (lambda () (cppcm-reload-all)))
-;; OPTIONAL, avoid typing full path when starting gdb
-(global-set-key (kbd "C-c C-g")
-		'(lambda ()(interactive) (gud-gdb (concat "gdb --fullname " (cppcm-get-exe-path-current-buffer)))))
 
 					; Add cmake listfile names to the mode list.
 (setq auto-mode-alist
@@ -148,7 +170,6 @@
       (isearch-yank-string region))))
 
 (add-hook 'isearch-mode-hook #'jrh-isearch-with-region)
-
 
 ;;(add-hook 'c-mode-common-hook (lambda () (interactive) (column-marker-3 80)))
 
@@ -207,9 +228,12 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(flycheck-clang-include-path (quote ("~/bootybay/kernel/src")))
+ '(flycheck-cppcheck-include-path (quote ("~/bootybay/kernel/src")))
+ '(flycheck-gcc-include-path (quote ("~/bootybay/kernel/src")))
  '(package-selected-packages
    (quote
-    (helm-git-grep helm nyan-mode yatemplate yasnippet-snippets nasm-mode yasnippet use-package tango-2-theme srefactor smartparens iedit google-c-style flycheck editorconfig cpputils-cmake company-irony-c-headers company-irony cmake-mode auto-complete-clang airline-themes))))
+    (clang-format helm-gtags irony helm-git-grep helm nyan-mode yatemplate yasnippet-snippets nasm-mode yasnippet use-package tango-2-theme srefactor smartparens iedit google-c-style flycheck editorconfig cpputils-cmake company-irony-c-headers company-irony cmake-mode auto-complete-clang airline-themes))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
